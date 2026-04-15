@@ -1,0 +1,39 @@
+data:
+  dataset_root: /content/.cache/kagglehub/datasets/raddar/chest-xrays-indiana-university/versions/1
+  processed_dir: /content/iu_xray_processed
+  train_csv: /content/iu_xray_processed/train.csv
+  val_csv: /content/iu_xray_processed/val.csv
+  test_csv: /content/iu_xray_processed/test.csv
+  image_size: 224
+  max_target_length: 128
+  num_workers: 2
+
+model:
+  vision_model_name: google/vit-base-patch16-224-in21k
+  text_model_name: google/flan-t5-base
+  observation_dim: 256
+  alignment_dim: 256
+  adapter_dim: 256
+  num_observations: 14
+  dropout: 0.1
+
+train:
+  output_dir: /content/iu_xray_runs/explainable_cmeaa
+  seed: 42
+  epochs: 5
+  batch_size: 4
+  lr: 2.0e-4
+  weight_decay: 1.0e-4
+  grad_accum_steps: 2
+  num_beams: 4
+  lambda_nmi: 0.1
+  lambda_obs: 0.5
+  lambda_proto: 0.1
+  lambda_sparse: 0.02
+  fp16: true
+  device: cuda
+
+eval:
+  batch_size: 4
+  explainability_topk: 20
+  run_faithfulness: true
