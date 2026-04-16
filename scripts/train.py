@@ -2,7 +2,6 @@ import argparse
 from pathlib import Path
 
 import torch
-from torch.cuda.amp import GradScaler
 from torch.optim import AdamW
 from torch.utils.data import DataLoader
 
@@ -30,7 +29,7 @@ def main():
     val_loader = DataLoader(val_set, batch_size=cfg.eval.batch_size, shuffle=False, num_workers=cfg.data.num_workers, collate_fn=collator)
 
     optimizer = AdamW((p for p in model.parameters() if p.requires_grad), lr=cfg.train.lr, weight_decay=cfg.train.weight_decay)
-    scaler = GradScaler(enabled=cfg.train.fp16 and device.type == "cuda")
+    scaler = torch.amp.GradScaler("cuda", enabled=cfg.train.fp16 and device.type == "cuda")
     out_dir = Path(cfg.train.output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
