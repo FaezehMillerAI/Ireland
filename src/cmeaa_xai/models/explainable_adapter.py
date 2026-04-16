@@ -124,6 +124,7 @@ class ExplainableCmEAAAdapter(nn.Module):
             nn.LayerNorm(hidden_size),
             nn.Linear(hidden_size, 2),
         )
+        self.evidence_proj = nn.Linear(observation_dim, hidden_size)
         self.output_norm = nn.LayerNorm(hidden_size)
 
     def forward(
@@ -143,7 +144,8 @@ class ExplainableCmEAAAdapter(nn.Module):
             + aligned_tokens
         )
         obs_logits, obs_attention, evidence, aux_loss = self.explainer(visual_tokens, phrase_states, observation_labels)
-        fused_tokens = self.output_norm(fused_tokens + evidence.mean(dim=1, keepdim=True))
+        evidence_summary = self.evidence_proj(evidence.mean(dim=1, keepdim=True))
+        fused_tokens = self.output_norm(fused_tokens + evidence_summary)
         return AdapterOutput(
             fused_tokens=fused_tokens,
             enhanced_tokens=enhanced_tokens,
